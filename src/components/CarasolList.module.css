@@ -1,0 +1,62 @@
+.CarasolList {
+	overflow-x: hidden;
+	width: var(--child-width);
+	max-width: var(--child-maxWidth);
+	padding: var(--child-padding);
+
+	/* >.heading {
+		max-width: 400px;
+		margin: 0 auto;
+		text-align: left;
+	} */
+
+	&>* {
+		text-align: left;
+	}
+
+	.transparent_overlay {
+		position: relative;
+		z-index: 5;
+		top: 100px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 100px;
+	}
+
+	ul.list {
+		display: flex;
+		flex-direction: row;
+		gap: 0.5rem;
+		width: 100vw;
+		margin-left: auto;
+		padding-left: 2px;
+
+		list-style: none;
+
+		overflow-x: scroll;
+
+		.item {
+			box-sizing: border-box;
+			width: fit-content;
+			min-width: 80px;
+			opacity: 0;
+			transition: opacity 1s;
+
+			&.show {
+				opacity: 1;
+			}
+
+			>.heading {
+				width: fit-content;
+				margin: 0;
+			}
+
+			>.weather {
+				.description {
+					display: block;
+				}
+			}
+		}
+	}
+}

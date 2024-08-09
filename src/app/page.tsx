@@ -1,113 +1,176 @@
-import Image from "next/image";
+'use client'
+
+import { ChangeEvent, useEffect, useState } from 'react'
+import { useWeatherApi } from '@/src/lib/hooks/useWeatherApi'
+import { CarasolList, CurrentWeather, BlockList } from '@/src/components'
+
+// TESTING DATA
+import ExampleResponse from '../data/ExampleResponse.json'
+
+let recentLocationObject = {
+	zip: '32159',
+	lat: '',
+	lon: '',
+	name: 'Lake County'
+}
+
+const recentSearches = [recentLocationObject, recentLocationObject, recentLocationObject]
 
 export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:size-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
 
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 sm:before:w-[480px] sm:after:w-[240px] before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+	// TODO: add an underscore to the 'data' from useWeatherApi when using test data. remove underscore and comment test data when done testing.
+	const [_data, location, setLocation] = useWeatherApi()
+	const data = ExampleResponse
+	const [country, setCountry] = useState('United States')
+	const [state, setState] = useState('Florida')
+	const [city, setCity] = useState('Lady Lake')
+	const [zipCode, setZipCode] = useState('32159')
+	const [isLocationFormVisible, setIsLocationFormVisisble] = useState(false)
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
+	const [previousLocations, setPreviousLocations] = useState(new Array(recentSearches.length).fill(false))
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-sm opacity-50">
-            Explore starter templates for Next.js.
-          </p>
-        </a>
+	useEffect(() => {
+		if (!navigator.geolocation) return
+		navigator.geolocation.getCurrentPosition((position) => {
+			setLocation(null, position.coords.latitude, position.coords.longitude)
+		}, () => {
+			// error code here
+			console.warn("Error: Couldn't get geolocation")
+			setIsLocationFormVisisble(true)
+		})
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className="mb-3 text-2xl font-semibold">
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className="m-0 max-w-[30ch] text-balance text-sm opacity-50">
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+		console.log('previousLocations: ', previousLocations)
+
+	}, [])
+
+	useEffect(() => {
+		console.log('Location: ', location)
+	}, [location])
+
+	// TODO: Add Country, State, and City to this location form
+	// function handleOnChange_country(e) {
+	// 	console.log(e.target.value);
+	// 	setCountry(e.target.value)
+	// }
+	// function handleOnChange_state(e) {
+	// 	console.log(e.target.value);
+	// 	setState(e.target.value)
+	// }
+	// function handleOnChange_city(e) {
+	// 	console.log(e.target.value);
+	// 	setCity(e.target.value)
+	// }
+
+
+	function handleOnChange_zipCode(e: ChangeEvent<HTMLInputElement>) {
+		console.log(e.target.value)
+		setZipCode(e.target.value)
+	}
+
+	/**
+	 * 
+	 * @param {Event} e - Event object when form is submitted
+	 */
+	function handleOnClick_submitLocationData(e: { preventDefault: () => void; target: HTMLFormElement | undefined }) {
+		e.preventDefault()
+		console.log(`handleOnClick_submitLocationData\n\tCountry: ${country}\n\tState: ${state}\n\t City: ${city}\n\tZip: ${zipCode}`)
+		// TODO: uncomment below to get api data (also check the useWeatherApi hook called with the useState stuff)
+
+		const formData = new FormData(e.target)
+		const formJson = Object.fromEntries(formData.entries())
+		if (formJson.lat !== '' && formJson.lon !== '') setLocation(null, formJson.lat, formJson.lon)
+		else setLocation(formJson.zip, null, null)
+	}
+
+	console.log('recentSearches: ', recentSearches)
+	console.log('previousLocations: ', previousLocations)
+
+	return (
+		<main id='root'>
+			{/* LOCATION FORM */}
+			<form
+				method='get'
+				onSubmit={handleOnClick_submitLocationData}
+				className='location-form'
+				style={{ display: isLocationFormVisible ? 'flex' : 'none' }}
+			>
+
+				{/* TODO: Add Country, State, and City to this location form */}
+				{/* COUNTRY */}
+				{/* <label htmlFor="country">Country:</label>
+				<input id='country' type="text" placeholder={country} onChange={e => handleOnChange_country(e)} /> */}
+
+				{/* STATE */}
+				{/* <label htmlFor="state">State:</label>
+				<input id='state' type="text" placeholder={state} onChange={e => handleOnChange_state(e)} /> */}
+
+				{/* CITY */}
+				{/* <label htmlFor="city">City:</label>
+				<input id='city' type="text" placeholder={city} onChange={e => handleOnChange_city(e)} /> */}
+
+				{/* ZIP CODE */}
+				<label
+					htmlFor="zip-code"
+				>Zip Code:</label>
+				<input
+					id='zip-code'
+					type="text"
+					pattern='^[0-9]{5}(?:-[0-9]{4})?$'
+					placeholder={zipCode}
+					onChange={e => handleOnChange_zipCode(e)}
+				/>
+
+				{
+					recentSearches.length > 0 &&
+					<ul>
+						{
+							recentSearches.map((location, index) => {
+								return (
+									<li>
+										<input
+											type="radio"
+											id={`${location.name}_${index}`}
+											checked={previousLocations[index]}
+											onChange={() => setPreviousLocations(prev =>
+												prev.map((value, i) =>
+													i === index
+												)
+											)}
+										/>
+										<label
+											htmlFor={`${location.name}_${index}`}>
+											{location.name} {location.zip}
+										</label>
+									</li>
+								)
+							})
+						}
+					</ul>
+				}
+
+				<button type='submit'>Submit</button>
+			</form>
+
+			<CurrentWeather
+				data={data}
+				location={location.name}
+				country={location.country}
+				zip={location.zip}
+				onClick_toggleLocationFormVisibility={() => setIsLocationFormVisisble(!isLocationFormVisible)}
+			/>
+
+			{/* HOURLY */}
+			< CarasolList
+				name='12-HOUR FORECAST'
+				data={data.hourly && data.hourly}
+			/>
+
+			{/* DAILY */}
+			<BlockList
+				title='10-DAY FORECAST'
+				data={data.daily}
+			/>
+		</main>
+	)
 }

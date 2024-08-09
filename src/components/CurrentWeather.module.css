@@ -1,0 +1,56 @@
+.CurrentWeather {
+	display: flex;
+	flex-direction: column;
+
+	width: var(--child-width);
+	max-width: var(--child-maxWidth);
+	padding: var(--child-padding);
+
+	& header {
+		& h2 {
+			text-align: center;
+			font-size: 3em;
+		}
+	}
+
+	.main_content {
+
+		.hidden_data {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 1rem;
+			justify-content: space-evenly;
+
+			width: 100%;
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 2em 0 0;
+
+			.date,
+			.sunrise_sunset,
+			.cloudiness,
+			.visibility,
+			.rain_snow,
+			.temperature,
+			.uv_index,
+			.wind,
+			.rain_snow {
+				width: fit-content;
+				min-width: 127px;
+
+				& h3 {
+					margin: 0 auto;
+				}
+			}
+
+			.date {
+				width: 200px;
+				height: 50px;
+
+				margin: auto;
+				padding-top: auto;
+			}
+		}
+	}
+}
