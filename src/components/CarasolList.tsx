@@ -1,15 +1,17 @@
-import React, { cloneElement, createElement, useEffect, useRef } from 'react'
-import { renderToStaticMarkup, renderToString } from 'react-dom/server'
+'use client'
+
+import React, { useEffect, useRef } from 'react'
 import styles from './CarasolList.module.css'
 import { Temperature, Weather } from './index'
-import { minuteToString, hourToString, dayToString, dateToString } from '@/src/lib/utils'
+import { hourToString } from '@/src/lib/utils'
+import { Hourly } from '@/src/data/types'
 
 /**
  * @component
- * @param {object} props - props
- * @param {string} props.name - The name of the list
- * @param {object} props.data - The data for the list and list-items
- * @returns {React.ComponentElement}
+ * @param props - props
+ * @param props.name - The name of the list
+ * @param props.data - The data for the list and list-items
+ * @returns 
  * @example 
  * // 'data' looks like this...
  * [
@@ -39,26 +41,29 @@ import { minuteToString, hourToString, dayToString, dateToString } from '@/src/l
  *  ...
  * ]
  */
-export function CarasolList({ name, data }) {
+export function CarasolList({ name, data }: { name: string, data: Hourly[] }) {
 
 	if (!data) return
 
-	if (data.weather) console.log('data.weather.icon', data.weather.icon)
+	// if (data.length) console.log('data.weather.icon', data[0].weather[0].icon)
 
-	/** @type {import('react').RefObject<HTMLUListElement>} */
-	const list = useRef(null)
+	/**  */
+	const list = useRef<HTMLUListElement>(null)
 
 	useEffect(() => {
-		list.current.childNodes.forEach(li => {
-			observer.observe(li)
+		// console.log('list', list)
+		list.current?.childNodes.forEach((child: ChildNode) => {
+			// console.log('child: ', child)
+			if (child instanceof Element) {
+				observer.observe(child)
+			}
 		})
 	}, [list])
 
 	const observer = new IntersectionObserver(entries => {
+		// console.log('entries: ', entries)
 		entries.forEach(element => {
-
-			console.log('element: ', element)
-
+			// console.log('element to observe: ', element)
 			if (element.isIntersecting) {
 				element.target.classList.add(styles.show)
 			} else {
@@ -79,7 +84,7 @@ export function CarasolList({ name, data }) {
 				// LIST
 				<ul className={styles.list} ref={list}>
 					{
-						data && data.map((datum, index) => {
+						data && data.slice(0, 12).map((datum, index) => {
 							return (
 								// - lIST ITEM
 								<li className={styles.item} key={index}>
@@ -101,7 +106,6 @@ export function CarasolList({ name, data }) {
 									{/* - - TEMERATURE */}
 									<Temperature
 										temp={datum.temp}
-										feels_like={datum.feels_like}
 									/>
 								</li>
 							)

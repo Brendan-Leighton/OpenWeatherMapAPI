@@ -1,5 +1,6 @@
 import React from 'react'
 import styles from './Weather.module.css'
+import { Weather as iWeather } from '../data/types'
 
 /**
  * 
@@ -13,9 +14,9 @@ import styles from './Weather.module.css'
  * 				"description": "broken clouds",
  * 				"icon": "04n"
  * 			}
- * @returns {React.Component} - 
+ * @returns 
  */
-export function Weather({ data, percipitation }) {
+export function Weather({ data, percipitation }: { data: iWeather[], percipitation: number }) {
 	if (!data) return <>no data</>
 
 	return (
@@ -39,7 +40,7 @@ export function Weather({ data, percipitation }) {
 					{
 						// PERCIPITATION %
 						percipitation > 0 &&
-						<div className={styles.percipitation}>{percipitation * 100}%</div>
+						<div className={styles.percipitation}>{Math.round(percipitation * 100)}%</div>
 					}
 				</>
 			}

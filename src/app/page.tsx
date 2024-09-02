@@ -1,176 +1,163 @@
 'use client'
 
-import { ChangeEvent, useEffect, useState } from 'react'
-import { useWeatherApi } from '@/src/lib/hooks/useWeatherApi'
-import { CarasolList, CurrentWeather, BlockList } from '@/src/components'
-
+import { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 // TESTING DATA
 import ExampleResponse from '../data/ExampleResponse.json'
-
-let recentLocationObject = {
-	zip: '32159',
-	lat: '',
-	lon: '',
-	name: 'Lake County'
-}
-
-const recentSearches = [recentLocationObject, recentLocationObject, recentLocationObject]
+import DefaultData from '@/src/data/DefaultData'
+import { WeatherData } from '../data/types'
+import getWeatherData from '../lib/actions'
+import { BlockList, CarasolList, CurrentWeather } from '@/src/components'
+import LocationForm from '../components/LocationForm'
+import { LocationData } from '@/src/data/types/location'
+import useRecentLocations from '@/src/lib/useRecentLocations'
 
 export default function Home() {
 
-
-	// TODO: add an underscore to the 'data' from useWeatherApi when using test data. remove underscore and comment test data when done testing.
-	const [_data, location, setLocation] = useWeatherApi()
-	const data = ExampleResponse
-	const [country, setCountry] = useState('United States')
-	const [state, setState] = useState('Florida')
-	const [city, setCity] = useState('Lady Lake')
-	const [zipCode, setZipCode] = useState('32159')
-	const [isLocationFormVisible, setIsLocationFormVisisble] = useState(false)
-
-	const [previousLocations, setPreviousLocations] = useState(new Array(recentSearches.length).fill(false))
-
-	useEffect(() => {
-		if (!navigator.geolocation) return
-		navigator.geolocation.getCurrentPosition((position) => {
-			setLocation(null, position.coords.latitude, position.coords.longitude)
-		}, () => {
-			// error code here
-			console.warn("Error: Couldn't get geolocation")
-			setIsLocationFormVisisble(true)
-		})
-
-		console.log('previousLocations: ', previousLocations)
-
-	}, [])
-
-	useEffect(() => {
-		console.log('Location: ', location)
-	}, [location])
-
-	// TODO: Add Country, State, and City to this location form
-	// function handleOnChange_country(e) {
-	// 	console.log(e.target.value);
-	// 	setCountry(e.target.value)
-	// }
-	// function handleOnChange_state(e) {
-	// 	console.log(e.target.value);
-	// 	setState(e.target.value)
-	// }
-	// function handleOnChange_city(e) {
-	// 	console.log(e.target.value);
-	// 	setCity(e.target.value)
-	// }
-
-
-	function handleOnChange_zipCode(e: ChangeEvent<HTMLInputElement>) {
-		console.log(e.target.value)
-		setZipCode(e.target.value)
+	const isTesting = false
+	const emptyLocationData = {
+		zip: '',
+		name: '',
+		lat: '',
+		lon: '',
+		country: ''
 	}
 
 	/**
+	 * Global State - Current Location Data 
 	 * 
-	 * @param {Event} e - Event object when form is submitted
+	 * @property {setCurrentLocation} - use instead: {@link updateCurrentLocation()}
+	*/
+	const [currentLocation, setCurrentLocation] = useState<LocationData>(emptyLocationData)
+	/**
+	 * Global State - Weather Data
+	 * 
+	 * @property {setWeatherData} - use instead: {@link updateWeatherData()}
+	*/
+	const [weatherData, setWeatherData] = useState<WeatherData>(DefaultData)
+	/**
+	 * Toggles the visibility of the LocationForm component
 	 */
-	function handleOnClick_submitLocationData(e: { preventDefault: () => void; target: HTMLFormElement | undefined }) {
-		e.preventDefault()
-		console.log(`handleOnClick_submitLocationData\n\tCountry: ${country}\n\tState: ${state}\n\t City: ${city}\n\tZip: ${zipCode}`)
-		// TODO: uncomment below to get api data (also check the useWeatherApi hook called with the useState stuff)
+	const [isLocationFormVisible, setIsLocationFormVisible] = useState<boolean>(false)
+	/**
+	 * Recent Locationts
+	 * 
+	 * TODO - Move to LocationForm component
+	 */
+	// const [locations, addLocation, removeLocation] = useRecentLocations('recent_locations', [])
 
-		const formData = new FormData(e.target)
-		const formJson = Object.fromEntries(formData.entries())
-		if (formJson.lat !== '' && formJson.lon !== '') setLocation(null, formJson.lat, formJson.lon)
-		else setLocation(formJson.zip, null, null)
+	let lastTimeLocationUpdate: number = new Date().getTime()
+
+	/**
+	 * GET WEATHER DATA BY USERS CURRENT LOCATION
+	 */
+	useEffect(() => {
+		getCurrentLocation()
+	}, [])
+
+	/**
+	 * LOG CURRENT LOCATION ON CHANGE
+	 */
+	useEffect(() => {
+		console.log('currentLocation: ', currentLocation)
+	}, [currentLocation])
+
+	function getCurrentLocation() {
+		navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
+			console.log(`Current GeoLocation: ${position.coords.latitude}, ${position.coords.longitude}`)
+			updateWeatherData(position.coords.latitude.toString(), position.coords.longitude.toString(), undefined)
+		}, () => {
+			// error code here
+			console.warn("WARN: Couldn't get geolocation")
+			setIsLocationFormVisible(true)
+		})
 	}
 
-	console.log('recentSearches: ', recentSearches)
-	console.log('previousLocations: ', previousLocations)
+	/**
+	 * Used inplace of useState set function {@link setCurrentLocation()}.
+	 * 	
+	 * 1. Disallows this function from running more than once every 0.5 seconds
+	 * 2. Add new location to recentLocations
+	 * 3. Update currentLocation useState object
+	 * 
+	 * @param newLocationData - location data to replace {@link currentLocation}
+	 * @returns 
+	 */
+	function updateCurrentLocation(newLocationData: LocationData) {
+
+		// Don't run if recently ran
+		const currTime: number = new Date().getTime()
+		if (currTime - lastTimeLocationUpdate < 500) return
+		lastTimeLocationUpdate = currTime
+
+		// new location data
+		const newData: LocationData = {
+			zip: newLocationData.zip,
+			name: newLocationData.name,
+			lat: newLocationData.lat,
+			lon: newLocationData.lon,
+			country: newLocationData.country
+		}
+
+		console.log('-> updateCurrentLocation: ', newData)
+
+		// Add to recent locations and update current location
+		// addLocation(newData)
+		setCurrentLocation(newData)
+	}
+
+	/**
+	 * Makes an API call to get weather data then updates state: {@link weatherData} and {@link currentLocation}
+	 * 
+	 * * Used in place of {@link setWeatherData()}
+	 * 
+	 * Requires either lat & lon, or just zip, to be defined to make API call
+	 * @param lat - used for getting weather data via api call if available
+	 * @param lon - same as lat
+	 * @param zip - same as lat
+	 */
+	async function updateWeatherData(lat: string | undefined, lon: string | undefined, zip: string | undefined) {
+		const response = await getWeatherData(lat, lon, zip)
+		if (response.isSuccess && response.data) {
+			setWeatherData(response.data)
+			updateCurrentLocation(response.location)
+			setIsLocationFormVisible(false)
+		}
+	}
+
+	/**
+	 * Handle submitting the zip-code emitted from {@link LocationForm} to get weather data
+	 * @param zip - The zip code submitted by the LocationForm. Has already been validated by LocationForm.
+	 */
+	function handleOnSubmit_locationForm(zip: string) {
+		updateWeatherData(undefined, undefined, zip)
+	}
 
 	return (
-		<main id='root'>
-			{/* LOCATION FORM */}
-			<form
-				method='get'
-				onSubmit={handleOnClick_submitLocationData}
-				className='location-form'
-				style={{ display: isLocationFormVisible ? 'flex' : 'none' }}
-			>
+		<main id='root' >
 
-				{/* TODO: Add Country, State, and City to this location form */}
-				{/* COUNTRY */}
-				{/* <label htmlFor="country">Country:</label>
-				<input id='country' type="text" placeholder={country} onChange={e => handleOnChange_country(e)} /> */}
-
-				{/* STATE */}
-				{/* <label htmlFor="state">State:</label>
-				<input id='state' type="text" placeholder={state} onChange={e => handleOnChange_state(e)} /> */}
-
-				{/* CITY */}
-				{/* <label htmlFor="city">City:</label>
-				<input id='city' type="text" placeholder={city} onChange={e => handleOnChange_city(e)} /> */}
-
-				{/* ZIP CODE */}
-				<label
-					htmlFor="zip-code"
-				>Zip Code:</label>
-				<input
-					id='zip-code'
-					type="text"
-					pattern='^[0-9]{5}(?:-[0-9]{4})?$'
-					placeholder={zipCode}
-					onChange={e => handleOnChange_zipCode(e)}
-				/>
-
-				{
-					recentSearches.length > 0 &&
-					<ul>
-						{
-							recentSearches.map((location, index) => {
-								return (
-									<li>
-										<input
-											type="radio"
-											id={`${location.name}_${index}`}
-											checked={previousLocations[index]}
-											onChange={() => setPreviousLocations(prev =>
-												prev.map((value, i) =>
-													i === index
-												)
-											)}
-										/>
-										<label
-											htmlFor={`${location.name}_${index}`}>
-											{location.name} {location.zip}
-										</label>
-									</li>
-								)
-							})
-						}
-					</ul>
-				}
-
-				<button type='submit'>Submit</button>
-			</form>
+			<LocationForm
+				isLocationFormVisible={isLocationFormVisible}
+				handleOnClick_toggleFormVisibility={() => setIsLocationFormVisible(!isLocationFormVisible)}
+				emitZip={handleOnSubmit_locationForm}
+			/>
 
 			<CurrentWeather
-				data={data}
-				location={location.name}
-				country={location.country}
-				zip={location.zip}
-				onClick_toggleLocationFormVisibility={() => setIsLocationFormVisisble(!isLocationFormVisible)}
+				data={weatherData}
+				location={currentLocation.name}
+				onClick_toggleLocationFormVisibility={() => setIsLocationFormVisible(!isLocationFormVisible)}
 			/>
 
 			{/* HOURLY */}
 			< CarasolList
 				name='12-HOUR FORECAST'
-				data={data.hourly && data.hourly}
+				data={weatherData.hourly && weatherData.hourly}
 			/>
 
 			{/* DAILY */}
 			<BlockList
 				title='10-DAY FORECAST'
-				data={data.daily}
+				data={weatherData.daily}
 			/>
-		</main>
+		</main >
 	)
 }

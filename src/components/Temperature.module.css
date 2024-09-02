@@ -1,3 +1,10 @@
 .Temperature {
 	font-size: 1.5em;
+
+	.fahrenheit_symbol {
+		& sup {
+			vertical-align: sub;
+		}
+	}
+
 }

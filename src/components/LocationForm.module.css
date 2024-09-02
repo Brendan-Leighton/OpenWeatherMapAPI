@@ -1,0 +1,69 @@
+.LocationForm {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 4;
+	background-color: transparent !important;
+
+	.backdrop {
+		position: absolute;
+		height: 100vh;
+		width: 100vw;
+		background-color: inherit;
+		border-radius: 0px;
+	}
+
+	.location_form {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 5;
+
+		display: flex;
+		flex-direction: column;
+		gap: 1em;
+		justify-content: center;
+
+		width: 70%;
+		max-width: 400px;
+		height: 50%;
+
+		text-align: center;
+		color: white;
+		background-color: var(--color-background);
+		backdrop-filter: none;
+		border-radius: var(--border-radius);
+
+		& h2 {
+			text-align: center;
+		}
+
+		& input {
+			box-sizing: border-box;
+			width: 200px;
+			margin: 0 auto;
+			padding: 1rem 2rem;
+
+			color: white;
+			background-color: transparent;
+			backdrop-filter: blur(5px);
+			border: grey 1px solid;
+			border-radius: 7px;
+			outline: none;
+		}
+
+		& input:focus {
+			outline: none;
+			border: var(--color-contrast) 1px solid;
+			transition-duration: 0.25s;
+		}
+
+		& button {
+			width: 200px;
+			margin: 0 auto;
+		}
+	}
+}

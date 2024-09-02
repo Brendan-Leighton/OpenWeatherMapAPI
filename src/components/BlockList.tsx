@@ -1,10 +1,11 @@
 import React from 'react'
 import styles from './BlockList.module.css'
-import { Temperature, Weather } from './'
+import { Temperature, Weather } from '.'
 import { dayToString } from '@/src/lib/utils'
+import { Daily, Weather as iWeather } from '../data/types'
 
 
-export function BlockList({ title, data }) {
+export function BlockList({ title, data }: { title: string, data: Daily[] }) {
 
 	return (
 		<section className={styles.BlockList}>
@@ -12,11 +13,11 @@ export function BlockList({ title, data }) {
 				<h2 className='forecast-heading'>{title ? title : 'no title'}</h2>
 			</header>
 
-			<main className={styles.main}>
+			<main>
 				{/* LIST */}
 				<ul className={styles.list}>
 					{
-						data && data.map((datum, index) => {
+						data && data.map((datum: { dt: number; weather: iWeather[]; pop: number; temp: { min: number; max: number } }, index: React.Key | null | undefined) => {
 							return (
 
 								// - lIST ITEM

@@ -72,8 +72,9 @@ export function hourToString(epochSecs) {
 export function minuteToString(epochSecs) {
 	const date = getDate(epochSecs)
 	const hourNum = date.getHours()
+	const minsNum = date.getMinutes()
 
-	return `${hourNum}:${date.getMinutes()} ${hourNum < 12 ? 'AM' : 'PM'}`
+	return `${hourNum}:${minsNum < 10 ? '0' + minsNum : minsNum} ${hourNum < 12 ? 'AM' : 'PM'}`
 }
 
 /**

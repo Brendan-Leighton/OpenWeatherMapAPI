@@ -1,39 +1,48 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 
 import styles from './CurrentWeather.module.css'
-import { minuteToString, monthToString } from '@/src/lib/utils'
-import { Temperature, Weather } from './'
+import { minuteToString } from '@/src/lib/utils'
+import { Temperature } from '.'
+import { WeatherData } from '../data/types/'
+import { BiSolidEditLocation } from "react-icons/bi"
+import { IconContext } from 'react-icons'
 
 /**
  * 
- * @param {object} props - props passed in
- * @param {object} props.data - Current weather data 
  * @returns 
  */
-export function CurrentWeather({ data, location, onClick_toggleLocationFormVisibility }) {
+export function CurrentWeather(
+	{ data, location, onClick_toggleLocationFormVisibility }
+		:
+		{ data: WeatherData, location: string, onClick_toggleLocationFormVisibility: any }
+) {
 
-	if (!data.current) return <p>No Data</p>
-
-	const [currentDate, setCurrentDate] = useState()
+	// const [currentDate, setCurrentDate] = useState<Date>()
 	const [isMoreDataVisisble, setIsMoreDataVisisble] = useState(false)
 
-	useEffect(() => {
-		if (!data.current) return
-		if (data.current.dt) {
-			console.log('data.currnet.dt: ', data.current.dt)
-			setCurrentDate(new Date(data.current.dt * 1000))  // multiply becase we get seconds and need to pass milliseconds
-		}
+	// useEffect(() => {
+	// 	if (!data || !data.current) return
+	// 	if (data.current.dt) {
+	// 		setCurrentDate(new Date(data.current.dt * 1000))  // multiply becase we get seconds and need to pass milliseconds
+	// 	}
+	// }, [data])
+	// console.log('currentDate: ', currentDate)
 
-		console.log('feels_like: ', data.current.feels_like)
-	}, [data])
-	console.log('currentDate: ', currentDate)
+	useEffect(() => {
+		console.log('CurrentWeather Component: location name: ', location)
+	}, [location])
 
 
 	return (
+
 		<section className={styles.CurrentWeather}>
 			<header>
-				<h2>{location !== null ? location : 'Location'}</h2>
-				<button onClick={onClick_toggleLocationFormVisibility}>Edit</button>
+				<h2>{location !== null && location !== '' ? `${location} ` : "Entered Location "}
+					<button className={styles.editLocationButton} onClick={onClick_toggleLocationFormVisibility}>
+						<BiSolidEditLocation />
+					</button>
+				</h2>
+
 				<p className={styles.subheading}>
 					<Temperature temp={data.current.temp} /> | {data.current.weather[0].main}
 				</p>
@@ -52,10 +61,9 @@ export function CurrentWeather({ data, location, onClick_toggleLocationFormVisib
 							<div className={styles.temperature}>
 								<h3>Temp</h3>
 								{
-									(data.current.temp && data.current.feels_like) &&
+									data.current.temp &&
 									<Temperature
-										temp={data.current.temp}
-										feels_like={data.current.feels_like}
+										temp={data ? data.current.temp : 0}
 									/>
 								}
 							</div>
@@ -64,29 +72,33 @@ export function CurrentWeather({ data, location, onClick_toggleLocationFormVisib
 							<div className={styles.rain_snow}>
 								<h3>Rain/Snow</h3>
 								{
-									data.current.rain ? `Rain ${data.current.rain} mm/h`
-										: data.current.snow ? `Snow ${data.current.snow} mm/h`
-											: ` N/A`
+									data.current.rain ?
+										(
+											data.current.rain.rain ? `Rain ${data.current.rain.rain} mm/h`
+												: data.current.rain.snow ? `Snow ${data.current.rain.snow} mm/h`
+													: ' N/A'
+										)
+										: ' N/A'
 								}
 							</div>
 
 							{/* CLOUDINESS */}
 							<div className={styles.cloudiness}>
 								<h3>Coudiness</h3>
-								{data.current.clouds}%
+								{data ? data.current.clouds : '0'}%
 							</div>
 
 							{/* VISIBILITY (api is in kilimeters) */}
 							<div className={styles.visibility}>
 								<h3>Visibility</h3>
-								{data.current.visibility / 1000} km
+								{data ? data.current.visibility / 1000 : '0'} km
 							</div>
 
 							{/* WIND */}
 							<div className={styles.wind}>
 								<h3>Wind</h3>
 								<div>Speed / Gusts</div>
-								{data.current.wind_speed} / {data.current.wind_gust} mph
+								{data ? data.current.wind_speed : '0'} / {data ? data.current.wind_gust : '0'} mph
 							</div>
 
 							{/* ULTRA VIOLET INDEX */}
