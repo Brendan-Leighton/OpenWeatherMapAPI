@@ -5,7 +5,7 @@
 :root {
 	--child-width: 100%;
 	--child-maxWidth: 600px;
-	--child-padding: 0.5em 1em;
+	--child-padding: 1em;
 	--color-contrast: #ec6e4c;
 	--color-background: #45619de9;
 	--border-radius: 1rem;
