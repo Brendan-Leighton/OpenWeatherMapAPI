@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-// TESTING DATA
+// TESTING DATA - use inplace of API data when you don't need it
 import ExampleResponse from '../data/ExampleResponse.json'
 // import DefaultData from '@/src/data/DefaultData'
 import { WeatherData } from '../data/types'
@@ -34,6 +34,11 @@ export default function Home() {
 		console.log('currentLocation: ', currentLocation)
 	}, [currentLocation])
 
+	/**
+	 * Accepts data emitted from the LocationForm component. Data is set to local state and then passed to other components
+	 * @param location - data pertaining to the user's location
+	 * @param weather WeatherData
+	 */
 	function handle_locationFormData(location: LocationData, weather: WeatherData) {
 		setCurrentLocation(location)
 		setWeatherData(weather)
@@ -46,7 +51,6 @@ export default function Home() {
 				isLocationFormVisible={isLocationFormVisible}
 				emitData={handle_locationFormData}
 				emitLocationFormVisibiltyState={(state: boolean) => setIsLocationFormVisible(state)}
-			// emitZip={handleOnSubmit_locationForm}
 			/>
 
 			<CurrentWeather
