@@ -41,21 +41,20 @@ import { Hourly } from '@/src/data/types'
  *  ...
  * ]
  */
-export function CarasolList({ name, data }: { name: string, data: Hourly[] }) {
+export function CarasolList({ title, data }: { title: string, data: Hourly[] | undefined }) {
 
 	if (!data) return
-
-	// if (data.length) console.log('data.weather.icon', data[0].weather[0].icon)
-
 	/**  */
 	const list = useRef<HTMLUListElement>(null)
 
 	useEffect(() => {
+		// if (!data) return
+
 		// console.log('list', list)
 		list.current?.childNodes.forEach((child: ChildNode) => {
 			// console.log('child: ', child)
 			if (child instanceof Element) {
-				observer.observe(child)
+				observer && observer.observe(child)
 			}
 		})
 	}, [list])
@@ -75,16 +74,15 @@ export function CarasolList({ name, data }: { name: string, data: Hourly[] }) {
 	})
 
 	return (
-		<div className={styles.CarasolList}>
+		<section className={styles.CarasolList}>
+			<header>
+				<h2 className='forecast-heading'>{title.toUpperCase()}</h2>
+			</header>
 
-			{/* CARASOL HEADING */}
-			<h2 className={`${styles.heading} forecast-heading`}>{name.toUpperCase()}</h2>
-
-			{
-				// LIST
+			<main>
 				<ul className={styles.list} ref={list}>
 					{
-						data && data.slice(0, 12).map((datum, index) => {
+						data ? data.slice(0, 12).map((datum, index) => {
 							return (
 								// - lIST ITEM
 								<li className={styles.item} key={index}>
@@ -110,9 +108,11 @@ export function CarasolList({ name, data }: { name: string, data: Hourly[] }) {
 								</li>
 							)
 						})
+							:
+							<h3 className='m-auto'>N/A</h3>
 					}
 				</ul>
-			}
-		</div>
+			</main>
+		</section>
 	)
 }

@@ -5,19 +5,18 @@ import { dayToString } from '@/src/lib/utils'
 import { Daily, Weather as iWeather } from '../data/types'
 
 
-export function BlockList({ title, data }: { title: string, data: Daily[] }) {
+export function BlockList({ title, data }: { title: string, data: Daily[] | undefined }) {
 
 	return (
 		<section className={styles.BlockList}>
 			<header>
-				<h2 className='forecast-heading'>{title ? title : 'no title'}</h2>
+				<h2 className='forecast-heading'>{title.toUpperCase()}</h2>
 			</header>
 
 			<main>
-				{/* LIST */}
 				<ul className={styles.list}>
 					{
-						data && data.map((datum: { dt: number; weather: iWeather[]; pop: number; temp: { min: number; max: number } }, index: React.Key | null | undefined) => {
+						data ? data.map((datum: { dt: number; weather: iWeather[]; pop: number; temp: { min: number; max: number } }, index: React.Key | null | undefined) => {
 							return (
 
 								// - lIST ITEM
@@ -46,8 +45,11 @@ export function BlockList({ title, data }: { title: string, data: Daily[] }) {
 								</li>
 							)
 						})
+							:
+							<h3>N/A</h3>
 					}
-				</ul></main>
+				</ul>
+			</main>
 		</section>
 	)
 }

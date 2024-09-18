@@ -25,6 +25,23 @@
 	}
 
 	.main_content {
+		margin-top: 2rem;
+
+		.expand_hidden_data {
+			.view_more {
+				display: inline-flex;
+				justify-content: center;
+				align-items: center;
+				gap: 1rem;
+
+				font-size: 1.1rem;
+				background-color: var(--color-contrast);
+
+				& * {
+					font-size: 1.75rem;
+				}
+			}
+		}
 
 		.hidden_data {
 			display: flex;

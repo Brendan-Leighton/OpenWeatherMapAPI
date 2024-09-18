@@ -6,6 +6,7 @@ import { Temperature } from '.'
 import { WeatherData } from '../data/types/'
 import { BiSolidEditLocation } from "react-icons/bi"
 import { IconContext } from 'react-icons'
+import { MdOutlineExpandMore } from "react-icons/md"
 
 /**
  * 
@@ -14,7 +15,7 @@ import { IconContext } from 'react-icons'
 export function CurrentWeather(
 	{ data, location, onClick_toggleLocationFormVisibility }
 		:
-		{ data: WeatherData, location: string, onClick_toggleLocationFormVisibility: any }
+		{ data: WeatherData | null, location: string | undefined, onClick_toggleLocationFormVisibility: any }
 ) {
 
 	// const [currentDate, setCurrentDate] = useState<Date>()
@@ -44,17 +45,17 @@ export function CurrentWeather(
 				</h2>
 
 				<p className={styles.subheading}>
-					<Temperature temp={data.current.temp} /> | {data.current.weather[0].main}
+					<Temperature temp={data?.current.temp} /> | {data?.current.weather[0].main}
 				</p>
 			</header>
 
 			<main className={styles.main_content}>
 				<div className={styles.expand_hidden_data}>
-					<button onClick={() => setIsMoreDataVisisble(!isMoreDataVisisble)}>View More Current</button>
+					<button className={styles.view_more} onClick={() => setIsMoreDataVisisble(!isMoreDataVisisble)}>View More <MdOutlineExpandMore /></button>
 				</div>
 
 				<div className={styles.hidden_data} style={{ display: isMoreDataVisisble ? 'flex' : 'none' }}>
-					{data.current &&
+					{data?.current ?
 						<>
 
 							{/* TEMPERATURE */}
@@ -126,6 +127,7 @@ export function CurrentWeather(
 								}
 							</div>
 						</>
+						: <h2>N/A</h2>
 					}
 				</div>
 			</main >
