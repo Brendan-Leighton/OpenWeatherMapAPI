@@ -5,7 +5,9 @@ import DefaultData from '@/src/data/DefaultData'
 import { WeatherData, LocationData } from '@/src/data/types'
 import getWeatherData from '@/src/lib/actions'
 
-
+/**
+ * Used to reset currentLocation
+ */
 const emptyLocationData = {
 	zip: '',
 	name: '',
@@ -14,6 +16,17 @@ const emptyLocationData = {
 	country: ''
 }
 
+/**
+ * LocationForm Component
+ * - Toggle-able form visibility (user toggled and auto toggled)
+ * 	- Auto-ON when Navigator can't determine location,  
+ * 	- Auto-OFF when user submits form and weather data call is successful
+ * 	- Accepts boolean from parent to toggle form visibility
+ * - Emits Location and Weather data for parent to use
+ * 
+ * @param param0 Props passed to the component
+ * @returns - Form that collects a zip code and calls the OpenWeatherMap API to get weather data
+ */
 export default function LocationForm(
 	{
 		// recentLocations,
@@ -27,25 +40,26 @@ export default function LocationForm(
 		emitLocationFormVisibiltyState: any
 	}) {
 
+	/** Zip code the user enters and is used to make weather api call */
 	const [zip, setZip] = useState<string | undefined>(undefined)
 
 	/**
-	 * Global State - Weather Data
-	 * 
-	 * @property {setWeatherData} - use instead: {@link updateWeatherData()}
-	*/
-
-	/**
-	 * Global State - Current Location Data 
-	 * 
+	 * Global State - Current Location Data
 	 * @property {setCurrentLocation} - use instead: {@link updateCurrentLocation()}
 	*/
 	const [currentLocation, setCurrentLocation] = useState<LocationData>(emptyLocationData)
 
+
+	/**
+	 * Global State - Weather Data
+	 * @property {setWeatherData} - use instead: {@link updateWeatherData()}
+	*/
 	const [weatherData, setWeatherData] = useState<WeatherData>(DefaultData)
 
+	/** Toggle form visibility */
 	const [isFormVisible, setIsFormVisible] = useState<boolean>(false)
 
+	/** Track the last api call to limit call frequency (API data updates every 10 minutes) */
 	let lastTimeLocationUpdate: number = new Date().getTime()
 
 	/**
@@ -55,18 +69,25 @@ export default function LocationForm(
 		getCurrentLocation()
 	}, [])
 
+	/**
+	 * Update local state with boolean value passed in via component's props
+	 */
 	useEffect(() => {
-		console.log('isLocationFormVisible: ', isLocationFormVisible)
-
+		console.log('Setting LocationForm visibility\t\n> isLocationFormVisible: ', isLocationFormVisible)
 		setIsFormVisible(isLocationFormVisible)
 	}, [isLocationFormVisible])
 
+	/**
+	 * When local state value changes we emit it to parent who is also watching/updating the state value
+	 */
 	useEffect(() => {
 		console.log('isLocationFormVisible: ', isLocationFormVisible)
-
 		emitLocationFormVisibiltyState(isFormVisible)
 	}, [isFormVisible])
 
+	/**
+	 * Using Navigator API to get user's current location and using the lat/lon to get/set state currentLocation
+	 */
 	function getCurrentLocation() {
 		navigator.geolocation.getCurrentPosition((position: GeolocationPosition) => {
 			console.log(`Current GeoLocation: ${position.coords.latitude}, ${position.coords.longitude}`)
@@ -131,6 +152,10 @@ export default function LocationForm(
 		setCurrentLocation(newData)
 	}
 
+	/**
+	 * Handle form submission
+	 * @param e FormEvent Object
+	 */
 	async function handleOnSubmit(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault()
 
