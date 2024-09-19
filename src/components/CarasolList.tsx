@@ -77,7 +77,7 @@ export function CarasolList({ title, data }: { title: string, data: Hourly[] | u
 				observer && observer.observe(child)
 			}
 		})
-	}, [list, observer])
+	})
 
 	return (
 		<section className={styles.CarasolList}>
