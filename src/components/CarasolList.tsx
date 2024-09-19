@@ -61,10 +61,6 @@ const observer = new IntersectionObserver(entries => {
  */
 export function CarasolList({ title, data }: { title: string, data: Hourly[] | undefined }) {
 
-	// TODO: return something better
-	// BASE CASE - return w/o data.
-	if (!data) return
-
 	/**  */
 	const list = useRef<HTMLUListElement>(null)
 
@@ -78,6 +74,10 @@ export function CarasolList({ title, data }: { title: string, data: Hourly[] | u
 			}
 		})
 	})
+
+	// TODO: return something better
+	// BASE CASE - return w/o data.
+	if (!data) return
 
 	return (
 		<section className={styles.CarasolList}>
