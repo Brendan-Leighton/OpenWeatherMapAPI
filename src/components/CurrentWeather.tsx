@@ -1,11 +1,10 @@
-import React, { useState, useEffect, Suspense } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import styles from './CurrentWeather.module.css'
 import { minuteToString } from '@/src/lib/utils'
 import { Temperature } from '.'
 import { WeatherData } from '../data/types/'
 import { BiSolidEditLocation } from "react-icons/bi"
-import { IconContext } from 'react-icons'
 import { MdOutlineExpandMore } from "react-icons/md"
 
 /**
@@ -20,14 +19,6 @@ export function CurrentWeather(
 
 	// const [currentDate, setCurrentDate] = useState<Date>()
 	const [isMoreDataVisisble, setIsMoreDataVisisble] = useState(false)
-
-	// useEffect(() => {
-	// 	if (!data || !data.current) return
-	// 	if (data.current.dt) {
-	// 		setCurrentDate(new Date(data.current.dt * 1000))  // multiply becase we get seconds and need to pass milliseconds
-	// 	}
-	// }, [data])
-	// console.log('currentDate: ', currentDate)
 
 	useEffect(() => {
 		console.log('CurrentWeather Component: location name: ', location)
