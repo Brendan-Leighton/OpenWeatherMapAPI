@@ -7,24 +7,6 @@ import { hourToString } from '@/src/lib/utils'
 import { Hourly } from '@/src/data/types'
 
 /**
- * Observer @access private
- * Watches an array of elements and show/hides them. Show when in view, hide when out of view.
- */
-const observer = new IntersectionObserver(entries => {
-	// console.log('entries: ', entries)
-	entries.forEach(element => {
-		// console.log('element to observe: ', element)
-		if (element.isIntersecting) {
-			element.target.classList.add(styles.show)
-		} else {
-			element.target.classList.remove(styles.show)
-		}
-	})
-}, {
-	threshold: [0.25, 0.5] // [left threshold, right threshold]
-})
-
-/**
  * @component A horizontally-scrolling list where the items fade-in/out when entering/leaving the viewport
  * @param props - props
  * @param props.name - The name of the list - used as this components heading-element
@@ -68,6 +50,28 @@ export function CarasolList({ title, data }: { title: string, data: Hourly[] | u
 	* When the list updates, 'observe' it's location on/off screen and show/hide the element.
 	*/
 	useEffect(() => {
+
+		if (typeof window === 'undefined' || !list.current) return
+
+		/**
+		 * Observer @access private
+		 * Watches an array of elements and show/hides them. Show when in view, hide when out of view.
+		 */
+		const observer = new IntersectionObserver(entries => {
+			// console.log('entries: ', entries)
+			entries.forEach(element => {
+				// console.log('element to observe: ', element)
+				if (element.isIntersecting) {
+					element.target.classList.add(styles.show)
+				} else {
+					element.target.classList.remove(styles.show)
+				}
+			})
+		}, {
+			threshold: [0.25, 0.5] // [left threshold, right threshold]
+		})
+
+		// OBSERVE EACH LIST ITEM
 		list.current?.childNodes.forEach((child: ChildNode) => {
 			if (child instanceof Element) {
 				observer && observer.observe(child)
