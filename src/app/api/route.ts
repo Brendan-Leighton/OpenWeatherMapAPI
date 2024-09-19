@@ -1,6 +1,11 @@
 import { NextRequest } from "next/server"
 
-export async function getWeatherData(request: NextRequest): Promise<Response> {
+/**
+ * GET request to fetch weather data from OpenWeatherMap API
+ * @param request - NextRequest object
+ * @returns - Response object
+ */
+export async function GET(request: NextRequest): Promise<Response> {
 	const lat = request.nextUrl.searchParams.get('lat')
 	const lon = request.nextUrl.searchParams.get('lon')
 	const zip = request.nextUrl.searchParams.get('zip')
@@ -18,7 +23,7 @@ export async function getWeatherData(request: NextRequest): Promise<Response> {
 		return Promise.reject(new Response(`Failed to get weather data. Either lat & lon was not set, and zip was not set.\n\tLat: ${lat}\n\tLon: ${lon}\n\tZip: ${zip}`, { status: 500 }))
 	}
 
-	// MAKE REQUEST
+	// MAKE REQUEST - TRY
 	try {
 		const response = await fetch(url)
 		if (!response.ok) {
@@ -28,6 +33,7 @@ export async function getWeatherData(request: NextRequest): Promise<Response> {
 		const json = await response.json()
 		console.log('json: ', json)
 
+		// Check if the response contains valid location data
 		if (!json.name) {
 			return new Response(JSON.stringify({
 				name: json[0].name,
@@ -42,6 +48,7 @@ export async function getWeatherData(request: NextRequest): Promise<Response> {
 			})
 
 		}
+		// MAKE REQUEST - CATCH
 		else {
 			return new Response(JSON.stringify(json), {
 				headers: {
@@ -66,6 +73,12 @@ function getUrl_zipCode(zipCode: any, countryCode: string): string {
 	return `http://api.openweathermap.org/geo/1.0/zip?zip=${zipCode},${countryCode}&appid=${process.env.WEATHER_API_KEY}`
 }
 
+/**
+ * Get weather data with latitude and longitude
+ * @param lat - Latitude
+ * @param lon - Longitude
+ * @returns - Request ready URL
+ */
 function getUrl_latLon(lat: any, lon: any): string {
 	return `http://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=${1}&appid=${process.env.WEATHER_API_KEY}`
 }

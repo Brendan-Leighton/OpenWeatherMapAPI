@@ -3,7 +3,7 @@ import styles from './LocationForm.module.css'
 import { useEffect } from 'react'
 import DefaultData from '@/src/data/DefaultData'
 import { WeatherData, LocationData } from '@/src/data/types'
-import getWeatherData from '@/src/lib/actions'
+import GET from '@/src/lib/actions'
 
 /**
  * Used to reset currentLocation
@@ -110,7 +110,7 @@ export default function LocationForm(
 	 * @param zip - same as lat
 	 */
 	async function updateWeatherData(lat: string | undefined, lon: string | undefined, zip: string | undefined) {
-		const response = await getWeatherData(lat, lon, zip)
+		const response = await GET(lat, lon, zip)
 		if (response.isSuccess && response.data) {
 			setWeatherData(response.data)
 			updateCurrentLocation(response.location)
